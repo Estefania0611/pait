@@ -1,24 +1,7 @@
 const { Pool } = require('pg');
 require('dotenv').config();
 
-const connectionString = process.env.DATABASE_URL;
-
-if (!connectionString) {
-  console.error("❌ DATABASE_URL no definida en el .env");
-  process.exit(1);
-}
-
 const pool = new Pool({
-  connectionString,
-  ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
+    connectionString: "postgresql://_6af43bcfa61f20e3:_7478c7d57c694fe6c9fc99a7cf9505@primary.clinica--txlmr772xj76.addon.code.run:5432/_7f50aa6458de?sslmode=require"
 });
-
-pool.on('connect', () => {
-  console.log('✅ Conectado a PostgreSQL usando DATABASE_URL');
-});
-
-pool.on('error', (err) => {
-  console.error('❌ Error en la conexión a la base de datos', err);
-});
-
 module.exports = pool;
