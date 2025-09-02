@@ -1,0 +1,1751 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#242c4c">
+    <title>Clínica Traversari - Médicos</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90' font-weight='bold' fill='%23c4a45c'>CT</text></svg>" type="image/svg+xml">
+
+   <style>
+        /* Reset y variables CSS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #c4a45c;
+            --primary-dark: #a88a4a;
+            --secondary-color: #64748b;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --background-color: #f8fafc;
+            --card-background: #ffffff;
+            --text-color: #1e293b;
+            --text-light: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Pantallas */
+        .screen {
+            display: none;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Estilos de autenticación */
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #242c4c 0%, #3a4668 100%);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: white;
+        }
+
+        .logo-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1rem;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: var(--primary-color);
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .logo p {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .auth-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .auth-form .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .auth-form .form-group i {
+            position: absolute;
+            left: 15px;
+            top: 45px;
+            color: var(--text-light);
+        }
+
+        .auth-form input {
+            width: 100%;
+            padding: 0.75rem 0.75rem 0.75rem 45px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            background: var(--background-color);
+            transition: border-color 0.3s ease;
+        }
+
+        .auth-form input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: white;
+        }
+
+        .auth-links {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: white;
+        }
+
+        /* Header de la app */
+        .app-header {
+            background: #242c4c;
+            color: white;
+            padding: 1rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .app-header h1 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .app-header h1 i {
+            font-size: 1.4rem;
+        }
+
+        /* Navegación inferior */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card-background);
+            display: flex;
+            justify-content: space-around;
+            padding: 0.5rem;
+            border-top: 1px solid var(--border-color);
+            z-index: 100;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-item {
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            color: var(--text-light);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            flex: 1;
+            transition: color 0.3s ease;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-item i {
+            font-size: 1.2rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-item span {
+            font-size: 0.75rem;
+        }
+
+        /* Contenido principal */
+        .main-content {
+            margin: 60px 0 70px 0;
+            padding: 1rem;
+            min-height: calc(100vh - 130px);
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* Tarjetas */
+        .welcome-card, .appointment-card, .profile-card, .report-card {
+            background: var(--card-background);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+        }
+
+        .welcome-card {
+            text-align: center;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .welcome-card i {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .welcome-card h2 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Acciones rápidas */
+        .quick-actions {
+            margin: 1.5rem 0;
+        }
+
+        .quick-actions h3 {
+            margin-bottom: 1rem;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .action-btn {
+            background: var(--card-background);
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .action-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .action-btn i {
+            font-size: 1.5rem;
+        }
+
+        /* Citas */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .section-header h2 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .date-selector {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .appointments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .appointment-item {
+            background: var(--card-background);
+            padding: 1rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary-color);
+            box-shadow: var(--shadow);
+        }
+
+        .appointment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .appointment-date {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+
+        .appointment-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .status-programada {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .status-confirmada {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .status-completada {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .status-cancelada {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .appointment-details {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .appointment-details p {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .appointment-actions {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+        }
+
+        /* Perfil */
+        .profile-info h3 {
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-group {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            align-items: center;
+        }
+
+        .info-group:last-child {
+            border-bottom: none;
+        }
+
+        .info-group label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+
+        /* Reportes */
+        .report-filters {
+            background: var(--card-background);
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+        }
+
+        .report-results {
+            margin-top: 1.5rem;
+        }
+
+        .report-item {
+            background: var(--card-background);
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--success-color);
+        }
+
+        .report-item h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .report-details {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .report-details p {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        /* Botones */
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-success:hover {
+            background: #0da271;
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Modales */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--card-background);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-header h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            transition: background 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: var(--background-color);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        /* Información del paciente */
+        .patient-info-card {
+            background: var(--background-color);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .patient-info-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .patient-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .patient-detail:last-child {
+            border-bottom: none;
+        }
+
+        .patient-detail label {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .contacts-list, .history-list {
+            margin-top: 0.5rem;
+        }
+
+        .contact-item, .history-item {
+            background: white;
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            border-left: 3px solid var(--success-color);
+        }
+
+        .contact-item h5, .history-item h5 {
+            color: var(--primary-color);
+            margin-bottom: 0.25rem;
+        }
+
+        /* Formularios */
+        .form-group {
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group i {
+            position: absolute;
+            left: 15px;
+            top: 38px;
+            color: var(--text-light);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem 0.75rem 0.75rem 45px;
+            border: 2px solid var(--border-color);
+            borderRadius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        /* Loading */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .loading.hidden {
+            display: none;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading p {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 0.75rem;
+            }
+            
+            .action-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .auth-container {
+                padding: 1rem;
+            }
+            
+            .auth-form {
+                padding: 1.5rem;
+            }
+            
+            .logo h1 {
+                font-size: 1.5rem;
+            }
+
+            .modal-overlay {
+                padding: 0.5rem;
+            }
+
+            .appointment-actions {
+                flex-direction: column;
+            }
+
+            .patient-detail {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+        }
+
+        /* Utilidades */
+        .hidden {
+            display: none !important;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-1 { margin-top: 0.5rem; }
+        .mt-2 { margin-top: 1rem; }
+        .mt-3 { margin-top: 1.5rem; }
+
+        .mb-1 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        .mb-3 { margin-bottom: 1.5rem; }
+    </style>
+</head>
+<body>
+    <!-- Pantalla de Login -->
+    <div id="login-screen" class="screen active">
+        <div class="auth-container">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-hospital"></i>
+                </div>
+                <h1>Clínica Traversari </h1>
+                <p>Sistema Médico - Acceso Profesional</p>
+            </div>
+            
+            <form id="login-form" class="auth-form">
+                <div class="form-group">
+                    <label for="email"><i class="fas fa-envelope"></i> Correo Electrónico</label>
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="email" required placeholder="medico@clinica.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password"><i class="fas fa-lock"></i> Contraseña</label>
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" required placeholder="••••••••">
+                </div>
+                
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- App Principal -->
+    <div id="app-screen" class="screen">
+        <!-- Header -->
+        <header class="app-header">
+            <h1><i class="fas fa-user-md"></i> Dr. <span id="doctor-name">Médico</span></h1>
+            <button id="logout-btn" class="btn-icon">
+                <i class="fas fa-sign-out-alt"></i>
+                <span style="font-size: 0.9rem;">Cerrar Sesión</span>
+            </button>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-target="home">
+                <i class="fas fa-home"></i>
+                <span>Inicio</span>
+            </button>
+            <button class="nav-item" data-target="appointments">
+                <i class="fas fa-calendar-check"></i>
+                <span>Citas</span>
+            </button>
+            <button class="nav-item" data-target="reports">
+                <i class="fas fa-chart-bar"></i>
+                <span>Reportes</span>
+            </button>
+            <button class="nav-item" data-target="profile">
+                <i class="fas fa-user"></i>
+                <span>Perfil</span>
+            </button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Sección Home -->
+            <section id="home-section" class="content-section active">
+                <div class="welcome-card">
+                    <i class="fas fa-stethoscope"></i>
+                    <h2>Bienvenido, Dr. <span id="user-name">Médico</span></h2>
+                    <p>Panel de control para gestión de citas y pacientes</p>
+                </div>
+
+                <div class="quick-actions">
+                    <h3><i class="fas fa-bolt"></i> Acciones Rápidas</h3>
+                    <div class="action-grid">
+                        <button class="action-btn" onclick="showSection('appointments')">
+                            <i class="fas fa-list"></i>
+                            <span>Ver Citas de Hoy</span>
+                        </button>
+                        <button class="action-btn" onclick="showSection('reports')">
+                            <i class="fas fa-file-medical"></i>
+                            <span>Generar Reportes</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="today-appointments">
+                    <h3><i class="fas fa-calendar-day"></i> Citas para Hoy</h3>
+                    <div id="today-appointments-list">
+                        <p class="text-center"><i class="fas fa-spinner fa-spin"></i> Cargando citas...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección Citas -->
+            <section id="appointments-section" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-calendar-check"></i> Mis Citas</h2>
+                </div>
+
+                <div class="date-selector">
+                    <div class="form-group">
+                        <label for="appointment-date"><i class="fas fa-calendar"></i> Fecha:</label>
+                        <input type="date" id="appointment-date" value="">
+                    </div>
+                    <button class="btn-primary" onclick="loadAppointments()">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+                </div>
+
+                <div class="appointments-list" id="appointments-list">
+                    <!-- Las citas se cargarán aquí dinámicamente -->
+                </div>
+            </section>
+
+            <!-- Sección Reportes -->
+            <section id="reports-section" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-chart-bar"></i> Reportes Médicos</h2>
+                </div>
+
+                <div class="report-filters">
+                    <h3><i class="fas fa-filter"></i> Filtros de Reporte</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="report-type">Tipo de Reporte:</label>
+                            <select id="report-type">
+                                <option value="citas">Citas por Fecha</option>
+                                <option value="enfermedades">Pacientes por Enfermedad</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="start-date">Fecha Inicio:</label>
+                            <input type="date" id="start-date">
+                        </div>
+                        <div class="form-group">
+                            <label for="end-date">Fecha Fin:</label>
+                            <input type="date" id="end-date">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" id="disease-filter" style="display: none;">
+                        <label for="disease">Enfermedad:</label>
+                        <input type="text" id="disease" placeholder="Ej: Diabetes, Hipertensión">
+                    </div>
+                    
+                    <button class="btn-primary" onclick="generateReport()">
+                        <i class="fas fa-file-export"></i> Generar Reporte
+                    </button>
+                </div>
+
+                <div class="report-results" id="report-results">
+                    <!-- Los resultados del reporte se cargarán aquí -->
+                </div>
+            </section>
+
+            <!-- Sección Perfil -->
+            <section id="profile-section" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-user"></i> Mi Perfil</h2>
+                </div>
+
+                <div class="profile-card">
+                    <div class="profile-info">
+                        <h3><i class="fas fa-info-circle"></i> Información Profesional</h3>
+                        <div class="info-group">
+                            <label><i class="fas fa-signature"></i> Nombres:</label>
+                            <span id="profile-nombres"></span>
+                        </div>
+                        <div class="info-group">
+                            <label><i class="fas fa-signature"></i> Apellidos:</label>
+                            <span id="profile-apellidos"></span>
+                        </div>
+                        <div class="info-group">
+                            <label><i class="fas fa-envelope"></i> Email:</label>
+                            <span id="profile-email"></span>
+                        </div>
+                        <div class="info-group">
+                            <label><i class="fas fa-phone"></i> Teléfono:</label>
+                            <span id="profile-telefono"></span>
+                        </div>
+                        <div class="info-group">
+                            <label><i class="fas fa-id-card"></i> Cédula:</label>
+                            <span id="profile-cedula"></span>
+                        </div>
+                        <div class="info-group">
+                            <label><i class="fas fa-briefcase-medical"></i> Especialidad:</label>
+                            <span id="profile-especialidad">Médico General</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal Atención Médica -->
+    <div id="modal-overlay" class="modal-overlay">
+        <div id="medical-attention-modal" class="modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-stethoscope"></i> Registro de Atención Médica</h3>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div id="patient-info">
+                    <!-- Información del paciente se cargará aquí -->
+                </div>
+                
+                <form id="medical-record-form">
+                    <input type="hidden" id="appointment-id">
+                    
+                    <div class="form-group">
+                        <label for="symptoms"><i class="fas fa-notes-medical"></i> Síntomas:</label>
+                        <textarea id="symptoms" placeholder="Describa los síntomas del paciente"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="diagnosis"><i class="fas fa-diagnoses"></i> Diagnóstico:</label>
+                        <textarea id="diagnosis" placeholder="Describa el diagnóstico"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="treatment"><i class="fas fa-pills"></i> Tratamiento:</label>
+                        <textarea id="treatment" placeholder="Describa el tratamiento recetado"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="medications"><i class="fas fa-capsules"></i> Medicamentos Recetados:</label>
+                        <textarea id="medications" placeholder="Lista de medicamentos recetados"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="observations"><i class="fas fa-clipboard"></i> Observaciones:</label>
+                        <textarea id="observations" placeholder="Observaciones adicionales"></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="closeModal()">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i> Guardar Registro
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loading" class="loading hidden">
+        <div class="spinner"></div>
+        <p>Cargando...</p>
+    </div>
+
+    <script>
+        // Configuración global
+        const API_BASE_URL = "http://localhost:5000" + '/api';
+
+        // Estado de la aplicación
+        let currentUser = null;
+        let authToken = localStorage.getItem('authToken');
+        let selectedAppointment = null;
+
+        // Elementos DOM
+        const screens = {
+            login: document.getElementById('login-screen'),
+            app: document.getElementById('app-screen')
+        };
+
+        const sections = {
+            home: document.getElementById('home-section'),
+            appointments: document.getElementById('appointments-section'),
+            reports: document.getElementById('reports-section'),
+            profile: document.getElementById('profile-section')
+        };
+
+        const navItems = document.querySelectorAll('.nav-item');
+
+        // Inicialización de la aplicación
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            setupEventListeners();
+            initializeAuth();
+            
+            // Establecer fecha actual por defecto
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('appointment-date').value = today;
+            
+            // Establecer rango de fechas para reportes (mes actual)
+            const firstDay = new Date();
+            firstDay.setDate(1);
+            document.getElementById('start-date').value = firstDay.toISOString().split('T')[0];
+            document.getElementById('end-date').value = today;
+            
+            // Mostrar/ocultar filtro de enfermedad según tipo de reporte
+            document.getElementById('report-type').addEventListener('change', function() {
+                const diseaseFilter = document.getElementById('disease-filter');
+                diseaseFilter.style.display = this.value === 'enfermedades' ? 'block' : 'none';
+            });
+        });
+
+        function initializeApp() {
+            if (authToken) {
+                verifyToken();
+            } else {
+                showScreen('login');
+            }
+        }
+
+        function setupEventListeners() {
+            // Navegación
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const target = this.getAttribute('data-target');
+                    showSection(target);
+                    
+                    // Actualizar estado activo de navegación
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Cargar datos cuando se muestra la sección
+                    if (target === 'appointments') {
+                        loadAppointments();
+                    } else if (target === 'home') {
+                        loadTodaysAppointments();
+                    } else if (target === 'profile') {
+                        loadProfile();
+                    }
+                });
+            });
+
+            // Logout
+            document.getElementById('logout-btn').addEventListener('click', logout);
+            
+            // Cerrar modal al hacer clic fuera
+            document.getElementById('modal-overlay').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+        }
+
+        // Funciones de pantalla
+        function showScreen(screenName) {
+            Object.values(screens).forEach(screen => {
+                screen.classList.remove('active');
+            });
+            screens[screenName].classList.add('active');
+        }
+
+        function showSection(sectionName) {
+            Object.values(sections).forEach(section => {
+                section.classList.remove('active');
+            });
+            sections[sectionName].classList.add('active');
+        }
+
+        function showModal() {
+            document.getElementById('modal-overlay').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').classList.remove('active');
+        }
+
+        function showLoading() {
+            document.getElementById('loading').classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').classList.add('hidden');
+        }
+
+        function showError(message) {
+            alert('Error: ' + message);
+        }
+
+        function showSuccess(message) {
+            alert('Éxito: ' + message);
+        }
+
+        // Servicio de API
+        class ApiService {
+            constructor(baseUrl) {
+                this.baseUrl = baseUrl;
+                this.token = localStorage.getItem('authToken');
+            }
+
+            async request(endpoint, options = {}) {
+                const url = `${this.baseUrl}${endpoint}`;
+                const config = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    },
+                    ...options
+                };
+
+                if (this.token) {
+                    config.headers.Authorization = `Bearer ${this.token}`;
+                }
+
+                try {
+                    const response = await fetch(url, config);
+                    
+                    if (response.status === 401) {
+                        localStorage.removeItem('authToken');
+                        window.location.reload();
+                        throw new Error('Sesión expirada');
+                    }
+
+                    if (!response.ok) {
+                        const error = await response.json().catch(() => ({}));
+                        throw new Error(error.message || `Error ${response.status}`);
+                    }
+
+                    return await response.json();
+                } catch (error) {
+                    console.error('API Request failed:', error);
+                    throw error;
+                }
+            }
+
+            // Auth endpoints
+            async login(email, password) {
+                return this.request('/auth/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ correo: email, password })
+                });
+            }
+
+            async getProfile() {
+                return this.request('/auth/profile');
+            }
+
+            // Appointment endpoints
+            async getDoctorAppointments(date) {
+                return this.request(`/citas/medico?fecha=${date}`);
+            }
+
+            async getAppointmentDetails(appointmentId) {
+                return this.request(`/citas/${appointmentId}`);
+            }
+
+            async updateAppointmentStatus(appointmentId, status) {
+                return this.request(`/citas/${appointmentId}/estado`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ estado: status })
+                });
+            }
+
+            async recordMedicalAttention(appointmentId, recordData) {
+                return this.request(`/citas/${appointmentId}/atencion`, {
+                    method: 'POST',
+                    body: JSON.stringify(recordData)
+                });
+            }
+
+            // User endpoints
+            async getUserProfile(userId) {
+                return this.request(`/usuarios/${userId}`);
+            }
+
+            // Report endpoints
+            async generateAppointmentsReport(startDate, endDate) {
+                return this.request(`/reportes/citas?fecha_inicio=${startDate}&fecha_fin=${endDate}`);
+            }
+
+            async generateDiseaseReport(disease, startDate, endDate) {
+                return this.request(`/reportes/enfermedades?enfermedad=${disease}&fecha_inicio=${startDate}&fecha_fin=${endDate}`);
+            }
+        }
+
+        // Instancia global de API
+        const api = new ApiService(API_BASE_URL);
+
+        // Autenticación
+        function initializeAuth() {
+            document.getElementById('login-form').addEventListener('submit', handleLogin);
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                showError('Por favor complete todos los campos');
+                return;
+            }
+            
+            try {
+                showLoading();
+                const response = await api.login(email, password);
+                
+                // Verificar que el usuario es médico
+                if (response.user.rol !== 'medico') {
+                    showError('Acceso restringido. Solo personal médico puede acceder.');
+                    return;
+                }
+                
+                localStorage.setItem('authToken', response.token);
+                api.token = response.token;
+                currentUser = response.user;
+                
+                showSuccess('Login exitoso');
+                initializeAppScreen();
+                showScreen('app');
+                loadTodaysAppointments();
+                
+            } catch (error) {
+                showError(error.message || 'Error en el login');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function verifyToken() {
+            try {
+                showLoading();
+                const response = await api.getProfile();
+                
+                // Verificar que el usuario es médico
+                if (response.rol !== 'medico') {
+                    showError('Acceso restringido. Solo personal médico puede acceder.');
+                    localStorage.removeItem('authToken');
+                    showScreen('login');
+                    return;
+                }
+                
+                currentUser = response;
+                initializeAppScreen();
+                showScreen('app');
+                loadTodaysAppointments();
+            } catch (error) {
+                console.error('Error verifying token:', error);
+                localStorage.removeItem('authToken');
+                authToken = null;
+                showScreen('login');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function initializeAppScreen() {
+            if (currentUser) {
+                document.getElementById('user-name').textContent = currentUser.nombres;
+                document.getElementById('doctor-name').textContent = currentUser.nombres;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('authToken');
+            authToken = null;
+            currentUser = null;
+            showScreen('login');
+        }
+
+        // Citas
+        async function loadTodaysAppointments() {
+            if (!currentUser) return;
+            
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                const appointments = await api.getDoctorAppointments(today);
+                displayTodaysAppointments(appointments);
+            } catch (error) {
+                showError('Error al cargar citas: ' + error.message);
+            }
+        }
+
+        function displayTodaysAppointments(appointments) {
+            const container = document.getElementById('today-appointments-list');
+            
+            if (!appointments || appointments.length === 0) {
+                container.innerHTML = '<p class="text-center"><i class="fas fa-calendar-times"></i> No hay citas para hoy</p>';
+                return;
+            }
+            
+            // Filtrar solo las citas programadas y confirmadas para hoy
+            const todaysAppointments = appointments.filter(apt => 
+                apt.estado === 'programada' || apt.estado === 'confirmada'
+            );
+            
+            if (todaysAppointments.length === 0) {
+                container.innerHTML = '<p class="text-center"><i class="fas fa-calendar-times"></i> No hay citas pendientes para hoy</p>';
+                return;
+            }
+            
+            container.innerHTML = todaysAppointments.map(appointment => `
+                <div class="appointment-item">
+                    <div class="appointment-header">
+                        <div class="appointment-date">
+                            <i class="fas fa-clock"></i>
+                            <h4>${appointment.hora}</h4>
+                        </div>
+                        <span class="appointment-status status-${appointment.estado}">
+                            <i class="fas fa-circle"></i> ${appointment.estado}
+                        </span>
+                    </div>
+                    <div class="appointment-details">
+                        <p><i class="fas fa-user"></i> Paciente: ${appointment.paciente_nombres} ${appointment.paciente_apellidos}</p>
+                        <p><i class="fas fa-id-card"></i> Cédula: ${appointment.paciente_cedula}</p>
+                    </div>
+                    ${appointment.estado !== 'completada' ? `
+                        <div class="appointment-actions">
+                            <button onclick="startMedicalAttention('${appointment.id}', '${appointment.paciente_id}')" class="btn-success">
+                                <i class="fas fa-stethoscope"></i> Atender
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        async function loadAppointments() {
+            if (!currentUser) return;
+            
+            try {
+                const date = document.getElementById('appointment-date').value;
+                const appointments = await api.getDoctorAppointments(date);
+                displayAppointments(appointments);
+            } catch (error) {
+                showError('Error al cargar citas: ' + error.message);
+            }
+        }
+
+        function displayAppointments(appointments) {
+            const container = document.getElementById('appointments-list');
+            
+            if (!appointments || appointments.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center">
+                        <p><i class="fas fa-calendar-times"></i> No hay citas para esta fecha</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = appointments.map(appointment => `
+                <div class="appointment-item">
+                    <div class="appointment-header">
+                        <div class="appointment-date">
+                            <i class="fas fa-clock"></i>
+                            <h4>${appointment.hora}</h4>
+                        </div>
+                        <span class="appointment-status status-${appointment.estado}">
+                            <i class="fas fa-circle"></i> ${appointment.estado}
+                        </span>
+                    </div>
+                    <div class="appointment-details">
+                        <p><i class="fas fa-user"></i> Paciente: ${appointment.paciente_nombres} ${appointment.paciente_apellidos}</p>
+                        <p><i class="fas fa-id-card"></i> Cédula: ${appointment.paciente_cedula}</p>
+                    </div>
+                    ${appointment.estado !== 'completada' ? `
+                        <div class="appointment-actions">
+                            <button onclick="startMedicalAttention('${appointment.id}', '${appointment.paciente_id}')" class="btn-success">
+                                <i class="fas fa-stethoscope"></i> Atender
+                            </button>
+                            <button onclick="updateAppointmentStatus('${appointment.id}', 'confirmada')" class="btn-secondary">
+                                <i class="fas fa-check"></i> Confirmar
+                            </button>
+                            <button onclick="updateAppointmentStatus('${appointment.id}', 'cancelada')" class="btn-secondary">
+                                <i class="fas fa-times"></i> Cancelar
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        async function updateAppointmentStatus(appointmentId, status) {
+            if (!confirm(`¿Estás seguro de que deseas ${status} esta cita?`)) return;
+            
+            try {
+                showLoading();
+                await api.updateAppointmentStatus(appointmentId, status);
+                showSuccess(`Cita ${status} exitosamente`);
+                loadAppointments();
+                if (document.getElementById('home-section').classList.contains('active')) {
+                    loadTodaysAppointments();
+                }
+            } catch (error) {
+                showError('Error al actualizar cita: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // FUNCIÓN MODIFICADA - Ahora muestra todos los datos del paciente
+        async function startMedicalAttention(appointmentId, patientId) {
+            try {
+                showLoading();
+                selectedAppointment = appointmentId;
+                
+                // Obtener información detallada del paciente
+                const patientInfo = await api.getUserProfile(patientId);
+                
+                // Mostrar información completa del paciente
+                document.getElementById('patient-info').innerHTML = `
+                    <div class="patient-info-card">
+                        <h4><i class="fas fa-user-injured"></i> Información del Paciente</h4>
+                        
+                        <div class="patient-detail">
+                            <label><i class="fas fa-signature"></i> Nombre completo:</label>
+                            <span>${patientInfo.user.nombres} ${patientInfo.user.apellidos}</span>
+                        </div>
+                        
+                        <div class="patient-detail">
+                            <label><i class="fas fa-id-card"></i> Cédula:</label>
+                            <span>${patientInfo.user.cedula}</span>
+                        </div>
+                        
+                        <div class="patient-detail">
+                            <label><i class="fas fa-envelope"></i> Email:</label>
+                            <span>${patientInfo.user.correo || 'No registrado'}</span>
+                        </div>
+                        
+                        <div class="patient-detail">
+                            <label><i class="fas fa-phone"></i> Teléfono:</label>
+                            <span>${patientInfo.user.telefono || 'No registrado'}</span>
+                        </div>
+                        
+                        ${patientInfo.emergencyContacts && patientInfo.emergencyContacts.length > 0 ? `
+                            <div class="patient-detail">
+                                <label><i class="fas fa-address-book"></i> Contactos de emergencia:</label>
+                                <span>${patientInfo.emergencyContacts.length} registrado(s)</span>
+                            </div>
+                            <div class="contacts-list">
+                                ${patientInfo.emergencyContacts.map(contact => `
+                                    <div class="contact-item">
+                                        <h5>${contact.nombre}</h5>
+                                        <p><i class="fas fa-phone"></i> ${contact.telefono}</p>
+                                        ${contact.relacion ? `<p><i class="fas fa-users"></i> ${contact.relacion}</p>` : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                        
+                        ${patientInfo.medicalHistory && patientInfo.medicalHistory.length > 0 ? `
+                            <div class="patient-detail">
+                                <label><i class="fas fa-file-medical"></i> Historial médico:</label>
+                                <span>${patientInfo.medicalHistory.length} registro(s)</span>
+                            </div>
+                            <div class="history-list">
+                                ${patientInfo.medicalHistory.map(history => `
+                                    <div class="history-item">
+                                        <h5>${history.enfermedad}</h5>
+                                        ${history.diagnostico ? `<p><i class="fas fa-stethoscope"></i> ${history.diagnostico}</p>` : ''}
+                                        ${history.fecha_diagnostico ? `<p><i class="fas fa-calendar"></i> ${formatDate(history.fecha_diagnostico)}</p>` : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : `
+                            <div class="patient-detail">
+                                <label><i class="fas fa-file-medical"></i> Historial médico:</label>
+                                <span>No registrado</span>
+                            </div>
+                        `}
+                    </div>
+                `;
+                
+                document.getElementById('appointment-id').value = appointmentId;
+                
+                // Limpiar formulario
+                document.getElementById('medical-record-form').reset();
+                
+                showModal();
+            } catch (error) {
+                showError('Error al cargar información del paciente: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function handleMedicalRecord(e) {
+            e.preventDefault();
+            
+            const appointmentId = document.getElementById('appointment-id').value;
+            const symptoms = document.getElementById('symptoms').value;
+            const diagnosis = document.getElementById('diagnosis').value;
+            const treatment = document.getElementById('treatment').value;
+            const medications = document.getElementById('medications').value;
+            const observations = document.getElementById('observations').value;
+            
+            if (!symptoms || !diagnosis) {
+                showError('Síntomas y diagnóstico son requeridos');
+                return;
+            }
+            
+            try {
+                showLoading();
+                await api.recordMedicalAttention(appointmentId, {
+                    sintomas: symptoms,
+                    diagnostico: diagnosis,
+                    tratamiento: treatment,
+                    medicamentos_recetados: medications,
+                    observaciones: observations
+                });
+                
+                // Actualizar estado de la cita a completada
+                await api.updateAppointmentStatus(appointmentId, 'completada');
+                
+                showSuccess('Atención médica registrada exitosamente');
+                closeModal();
+                loadAppointments();
+                if (document.getElementById('home-section').classList.contains('active')) {
+                    loadTodaysAppointments();
+                }
+            } catch (error) {
+                showError('Error al registrar atención: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Reportes
+        async function generateReport() {
+            const reportType = document.getElementById('report-type').value;
+            const startDate = document.getElementById('start-date').value;
+            const endDate = document.getElementById('end-date').value;
+            
+            if (!startDate || !endDate) {
+                showError('Las fechas de inicio y fin son requeridas');
+                return;
+            }
+            
+            try {
+                showLoading();
+                let reportData;
+                
+                if (reportType === 'citas') {
+                    reportData = await api.generateAppointmentsReport(startDate, endDate);
+                    displayAppointmentsReport(reportData);
+                } else if (reportType === 'enfermedades') {
+                    const disease = document.getElementById('disease').value;
+                    if (!disease) {
+                        showError('El nombre de la enfermedad es requerido');
+                        return;
+                    }
+                    reportData = await api.generateDiseaseReport(disease, startDate, endDate);
+                    displayDiseaseReport(reportData, disease);
+                }
+            } catch (error) {
+                showError('Error al generar reporte: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function displayAppointmentsReport(reportData) {
+            const container = document.getElementById('report-results');
+            
+            if (!reportData || !reportData.citas || reportData.citas.length === 0) {
+                container.innerHTML = '<p class="text-center"><i class="fas fa-info-circle"></i> No hay citas en el período seleccionado</p>';
+                return;
+            }
+            
+            container.innerHTML = `
+                <h3><i class="fas fa-file-medical"></i> Reporte de Citas: ${reportData.periodo}</h3>
+                <p><strong>Médico:</strong> ${reportData.doctor}</p>
+                <p><strong>Total de citas:</strong> ${reportData.total_citas}</p>
+                
+                <div class="report-list">
+                    ${reportData.citas.map(cita => `
+                        <div class="report-item">
+                            <h4><i class="fas fa-calendar"></i> ${cita.fecha} - ${cita.hora}</h4>
+                            <div class="report-details">
+                                <p><i class="fas fa-user"></i> <strong>Paciente:</strong> ${cita.paciente}</p>
+                                <p><i class="fas fa-id-card"></i> <strong>Cédula:</strong> ${cita.cedula}</p>
+                                ${cita.sintomas ? `<p><i class="fas fa-notes-medical"></i> <strong>Síntomas:</strong> ${cita.sintomas}</p>` : ''}
+                                ${cita.diagnostico ? `<p><i class="fas fa-diagnoses"></i> <strong>Diagnóstico:</strong> ${cita.diagnostico}</p>` : ''}
+                                ${cita.tratamiento ? `<p><i class="fas fa-pills"></i> <strong>Tratamiento:</strong> ${cita.tratamiento}</p>` : ''}
+                                ${cita.medicamentos ? `<p><i class="fas fa-capsules"></i> <strong>Medicamentos:</strong> ${cita.medicamentos}</p>` : ''}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function displayDiseaseReport(reportData, disease) {
+            const container = document.getElementById('report-results');
+            
+            if (!reportData || !reportData.pacientes || reportData.pacientes.length === 0) {
+                container.innerHTML = `<p class="text-center"><i class="fas fa-info-circle"></i> No hay pacientes con "${disease}" en el período seleccionado</p>`;
+                return;
+            }
+            
+            container.innerHTML = `
+                <h3><i class="fas fa-file-medical"></i> Reporte de Enfermedad: ${disease}</h3>
+                <p><strong>Médico:</strong> ${reportData.doctor}</p>
+                <p><strong>Período:</strong> ${reportData.periodo}</p>
+                <p><strong>Total de pacientes:</strong> ${reportData.total_pacientes}</p>
+                
+                <div class="report-list">
+                    ${reportData.pacientes.map(paciente => `
+                        <div class="report-item">
+                            <h4><i class="fas fa-user"></i> ${paciente.paciente}</h4>
+                            <div class="report-details">
+                                <p><i class="fas fa-id-card"></i> <strong>Cédula:</strong> ${paciente.cedula}</p>
+                                <p><i class="fas fa-calendar"></i> <strong>Fecha de atención:</strong> ${paciente.fecha}</p>
+                                ${paciente.sintomas ? `<p><i class="fas fa-notes-medical"></i> <strong>Síntomas:</strong> ${paciente.sintomas}</p>` : ''}
+                                ${paciente.diagnostico ? `<p><i class="fas fa-diagnoses"></i> <strong>Diagnóstico:</strong> ${paciente.diagnostico}</p>` : ''}
+                                ${paciente.tratamiento ? `<p><i class="fas fa-pills"></i> <strong>Tratamiento:</strong> ${paciente.tratamiento}</p>` : ''}
+                                ${paciente.medicamentos ? `<p><i class="fas fa-capsules"></i> <strong>Medicamentos:</strong> ${paciente.medicamentos}</p>` : ''}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // Perfil
+        async function loadProfile() {
+            if (!currentUser) return;
+            
+            document.getElementById('profile-nombres').textContent = currentUser.nombres;
+            document.getElementById('profile-apellidos').textContent = currentUser.apellidos;
+            document.getElementById('profile-email').textContent = currentUser.correo;
+            document.getElementById('profile-telefono').textContent = currentUser.telefono;
+            document.getElementById('profile-cedula').textContent = currentUser.cedula;
+        }
+
+        // Funciones auxiliares
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('es-ES', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        // Asignar event listener al formulario de registro médico
+        document.getElementById('medical-record-form').addEventListener('submit', handleMedicalRecord);
+    </script>
+</body>
+</html>
