@@ -2,8 +2,12 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
+const { initDatabase } = require('./src/config/initDatabase');
 
-const { pool, initializeDatabase, populateTestData } = require('./src/config/database');
+// Solo para desarrollo/test: inicializar BD
+if (process.env.NODE_ENV !== 'production') {
+  initDatabase();
+}
 
 // Importar rutas
 const authRoutes = require('./src/routes/auth');
@@ -16,37 +20,46 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static('public')); // Servir archivos estáticos desde la carpeta public
 
-// Inicializar base de datos y luego levantar el servidor
-(async () => {
-  await initializeDatabase();
-  // await populateTestData(); // Descomenta si quieres datos de prueba
+// Rutas API
+app.use('/api/auth', authRoutes);
+app.use('/api/citas', appointmentRoutes);
+app.use('/api/usuarios', userRoutes);
+app.use('/api/reportes', reportRoutes);
 
-  // Rutas API
-  app.use('/api/auth', authRoutes);
-  app.use('/api/citas', appointmentRoutes);
-  app.use('/api/usuarios', userRoutes);
-  app.use('/api/reportes', reportRoutes);
-
-  app.get('/', (req, res) => {
-    res.json({
-      message: 'Bienvenido al Sistema de Agendamiento de Citas Médicas',
-      institute: 'Instituto Superior Tecnológico Mayor Pedro Traversari',
-      version: '1.0.0'
-    });
+// Ruta de bienvenida
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Bienvenido al Sistema de Agendamiento de Citas Médicas',
+    institute: 'Instituto Superior Tecnológico Mayor Pedro Traversari',
+    version: '1.0.0'
   });
+});
 
-  app.get('/paciente', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'paciente.html'));
-  });
+// Ruta para servir el HTML del paciente
+app.get('/paciente', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'paciente.html'));
+});
 
-  app.get('/medico', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'medico.html'));
-  });
+// Ruta para servir el HTML del médico
+app.get('/medico', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'medico.html'));
+});
 
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => {
-    console.log(`Servidor ejecutándose en el puerto ${PORT}`);
-  });
-})();
+// Manejo de rutas no encontradas
+app.use('*', (req, res) => {
+  res.status(404).json({ message: 'Ruta no encontrada' });
+});
+
+// Manejo de errores
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: 'Error interno del servidor.' });
+});
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Servidor ejecutándose en el puerto ${PORT}`);
+  console.log(`Instituto Superior Tecnológico Mayor Pedro Traversari`);
+});
