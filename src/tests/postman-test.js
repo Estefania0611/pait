@@ -155,8 +155,6 @@ const populateTestData = async () => {
     
   } catch (error) {
     console.error('Error al poblar datos de prueba:', error);
-  } finally {
-    process.exit();
   }
 };
 
