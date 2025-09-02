@@ -2,13 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
-const { initDatabase } = require('./src/config/initDatabase');
 
-// Solo para desarrollo/test: inicializar BD
-if (process.env.NODE_ENV !== 'production') {
-   initDatabase();
 
- }
 
 // Importar rutas
 const authRoutes = require('./src/routes/auth');
